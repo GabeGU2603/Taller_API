@@ -70,3 +70,75 @@ def key_words(transcription):
         ]
     )
     return response['choices'][0]['message']['content']
+
+#COHERENCIA
+def coherencia_discurso(transcription):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'COHERENCIA' dime si el discurso es coherente y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+            },
+            {
+                "role": "user",
+                "content": transcription
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+#CLARIDAD
+def claridad_discurso(transcription):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'CLARIDAD' dime si el discurso es claro y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+            },
+            {
+                "role": "user",
+                "content": transcription
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+#Muletillas
+def muletillas_discurso(transcription):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'MULETILLAS' dime si hay o no muletillas, en casi si dime cuantas muletillas tiene el discurso y cuáles son. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+            },
+            {
+                "role": "user",
+                "content": transcription
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+#SUGERENCIA
+def sugerencia_discurso():
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": "En base a las métricas anteriores, coherencia, claridad y muletillas y en base tus respuestas, dame sugerencias para mejorar en esos aspectos"
+            },
+            {
+                "role": "user",
+                "content": ""
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']

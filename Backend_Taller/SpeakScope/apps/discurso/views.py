@@ -1,3 +1,4 @@
+from django.http import JsonResponse
 from rest_framework import generics
 from rest_framework.views import APIView
 from .utils import *
@@ -5,6 +6,8 @@ from .serializer import *
 from .models import Discurso
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import api_view
+
 
 ##Transcripción
 class TranscribeAudioView(APIView):
@@ -39,6 +42,31 @@ class TranscribeAudioView(APIView):
         return Response(response_data, status=status.HTTP_200_OK)
     
 ## CRUD
+
+@api_view(['GET'])
+def retroalimentacion_view(request):
+    # Obtén la última transcripción desde la base de datos
+    try:
+        # Obtén el último discurso (puedes ajustar esto según tu lógica)
+        ultimo_discurso = Discurso.objects.latest('fecha')
+        trans = ultimo_discurso.transcripcion
+    except Discurso.DoesNotExist:
+        # Maneja el caso en que no haya discursos en la base de datos
+        return JsonResponse({'error': 'No hay discursos en la base de datos'})
+
+    # Llama a tus funciones
+    claridad_resultado = claridad_discurso(trans)
+    coherencia_resultado = coherencia_discurso(trans)
+    muletillas_resultado = muletillas_discurso(trans)
+    sugerencia_resultado = sugerencia_discurso()
+
+    # Devuelve los resultados como una respuesta JSON
+    return JsonResponse({
+        'claridad_resultado': claridad_resultado,
+        'coherencia_resultado': coherencia_resultado,
+        'muletillas_resultado': muletillas_resultado,
+        'sugerencia_resultado': sugerencia_resultado,
+    })
 
 class DiscursoListaView(generics.ListCreateAPIView):
     queryset = Discurso.objects.all()

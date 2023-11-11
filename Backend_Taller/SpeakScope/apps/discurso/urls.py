@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
-from .views import TranscribeAudioView, DiscursoListaView, DiscursoloDetalleView
+from .views import TranscribeAudioView, DiscursoListaView, DiscursoloDetalleView, retroalimentacion_view
 
 urlpatterns = [
     #path("api/v1/", include(router.urls)),
@@ -9,5 +9,6 @@ urlpatterns = [
     path('transcribe-audio/', TranscribeAudioView.as_view(), name='transcribe_audio'),
     path('discurso/', DiscursoListaView.as_view()),
     path('discurso/<int:pk>/', DiscursoloDetalleView.as_view()),
+    path('retroalimentacion/', retroalimentacion_view, name='retroalimentacion'),
 
 ]   
