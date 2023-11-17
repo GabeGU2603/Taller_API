@@ -150,6 +150,7 @@ CORS_ALLOWED_ORIGINS = [
    'http://localhost:5174',
    'http://localhost:5173',
    'https://s5m14d8h-5173.brs.devtunnels.ms',
-   'https://speakscope-frontend-d7e24.web.app'
+   'https://speakscope-frontend-d7e24.web.app',
+   'http://134.209.41.0'
 ]
 CORS_ALLOWED_CREDENTIAL = True
