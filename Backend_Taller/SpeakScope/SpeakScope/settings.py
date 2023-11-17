@@ -89,11 +89,13 @@ WSGI_APPLICATION = 'SpeakScope.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'localhost',
+        #'HOST': 'localhost',
+        'HOST': 'db.hakjkcfggkqbmuscouyd.supabase.co',
         'PORT': 5432,
         'NAME': 'bd',
         'USER': 'postgres',
-        'PASSWORD': 'Us3Rr',
+        #'PASSWORD': 'Us3Rr',
+        'PASSWORD':'!vC81q_rv;)1'
     }
 }
 
