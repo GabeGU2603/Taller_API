@@ -22,7 +22,7 @@ SECRET_KEY = 'django-insecure-)10_n6d+hv!b^*rddkofs^3vo7v1y8!=)+k=gv@c8@)&4@d_7s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.209.41.0', 'localhost','apis.speakscope.tech']
+ALLOWED_HOSTS = ['134.209.41.0', 'localhost','apis.speakscope.tech','127.0.0.1']
 
 
 # Application definition
@@ -60,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',#pal hisotry
 ]
 
@@ -150,9 +151,9 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [ 
    'http://localhost:5174',
    'http://localhost:5173',
-   'https://speakscope-frontend-d7e24.web.app',
    'http://134.209.41.0',
    'http://apis.speakscope.tech',
-   'https://apis.speakscope.tech'
+   'https://apis.speakscope.tech',
+   'https://speakscope-frontend-d7e24.web.app'
 ]
 CORS_ALLOWED_CREDENTIAL = True
