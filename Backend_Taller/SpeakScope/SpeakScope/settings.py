@@ -152,7 +152,7 @@ CORS_ALLOWED_ORIGINS = [
    'http://localhost:5173',
    'https://speakscope-frontend-d7e24.web.app',
    'http://134.209.41.0',
-   #'http://api.speakscope.tech',
-   #'https://api.speakscope.tech'
+   'http://apis.speakscope.tech',
+   'https://apis.speakscope.tech'
 ]
 CORS_ALLOWED_CREDENTIAL = True
