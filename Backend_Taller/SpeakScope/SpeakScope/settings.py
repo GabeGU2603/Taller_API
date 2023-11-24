@@ -22,7 +22,7 @@ SECRET_KEY = 'django-insecure-)10_n6d+hv!b^*rddkofs^3vo7v1y8!=)+k=gv@c8@)&4@d_7s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['134.209.41.0']
+ALLOWED_HOSTS = ['134.209.41.0', 'localhost']
 
 
 # Application definition
@@ -149,7 +149,6 @@ REST_FRAMEWORK = {
 CORS_ALLOWED_ORIGINS = [ 
    'http://localhost:5174',
    'http://localhost:5173',
-   'https://s5m14d8h-5173.brs.devtunnels.ms',
    'https://speakscope-frontend-d7e24.web.app',
    'http://134.209.41.0'
 ]
