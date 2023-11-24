@@ -34,6 +34,7 @@ BASE_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
 ]
 LOCAL_APPS = [
     'apps.discurso',
@@ -151,5 +152,6 @@ CORS_ALLOWED_ORIGINS = [
    'http://localhost:5173',
    'https://speakscope-frontend-d7e24.web.app',
    'http://134.209.41.0',
+   'http://api.speakscope.tech/'
 ]
 CORS_ALLOWED_CREDENTIAL = True
