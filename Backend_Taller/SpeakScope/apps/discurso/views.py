@@ -21,12 +21,14 @@ class TranscribeAudioView(APIView):
         resumen = summary_extraction(transcription)
         ideasClave = key_points_extraction(transcription)
         palabrasClave = key_words(transcription)
+        sent_analy = sentiment_analysis(transcription)
         
         response_data = {
             'transcription': transcription,
             'resumen': resumen,
             'ideasClave': ideasClave,
-            'palabrasClave': palabrasClave
+            'palabrasClave': palabrasClave,
+            'Analisis_de_Sentimientos': sent_analy,
         }
         discurso = Discurso(
             #usuarioID=request.user,  # Asume que estás utilizando autenticación de usuario
@@ -35,7 +37,8 @@ class TranscribeAudioView(APIView):
             transcripcion=transcription,
             resumen=resumen,
             palabrasClave=palabrasClave,
-            ideasClave=ideasClave
+            ideasClave=ideasClave,
+            #sentimiento=sent_analy,
         )
         discurso.save()
         
@@ -58,13 +61,16 @@ def retroalimentacion_view(request):
     claridad_resultado = claridad_discurso(trans)
     coherencia_resultado = coherencia_discurso(trans)
     muletillas_resultado = muletillas_discurso(trans)
-    sugerencia_resultado = sugerencia_discurso()
+    redundancia_discursoa = redundancia_discurso(trans)
+    sugerencia_resultado = sugerencia_discurso(trans)
+   
 
     # Devuelve los resultados como una respuesta JSON
     return JsonResponse({
         'claridad_resultado': claridad_resultado,
         'coherencia_resultado': coherencia_resultado,
         'muletillas_resultado': muletillas_resultado,
+        'redundancia_discurso': redundancia_discursoa,
         'sugerencia_resultado': sugerencia_resultado,
     })
 
@@ -72,6 +78,21 @@ class DiscursoListaView(generics.ListCreateAPIView):
     queryset = Discurso.objects.all()
     serializer_class = DiscursoSerializer
 
+    def list(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+       # encabezados = request.headers
+
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+      #  auth_header = request.headers.get('Authorization') #Header conocido
+
+        # Aquí puedes realizar operaciones con los encabezados
+        # ...
+
+        # Continuar con la operación normal de la lista
+        #print(auth_header)
+        #UID = validate_id_token(auth_header) #importamos función validar id usuario
+        return super(DiscursoListaView, self).list(request,args, **kwargs)
+    
 class DiscursoloDetalleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Discurso.objects.all()
     serializer_class = DiscursoSerializer   

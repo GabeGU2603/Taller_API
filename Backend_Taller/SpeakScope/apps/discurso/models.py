@@ -10,6 +10,7 @@ class Discurso(models.Model):
     resumen = models.TextField()
     palabrasClave = models.TextField()
     ideasClave = models.TextField()
+    #sentimiento = models.TextField()
     fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

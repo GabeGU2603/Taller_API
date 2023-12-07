@@ -1,10 +1,15 @@
 import openai
 import os
 
-
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
+#Auth Firebase
+from firebase_admin.auth import verify_id_token
 
+def validate_id_token(id_token:str) -> str:
+    decoded_token = verify_id_token(id_token)
+    uid = decoded_token['uid']
+    return uid
 
 # Asegúrate de que hayas configurado tu API key de OpenAI
 #api_key = os.environ.get('api_key')  # Reemplaza con tu clave API
@@ -61,7 +66,34 @@ def key_words(transcription):
         messages=[
             {
                 "role": "system",
-                "content": "Dime las palabras clave de la transcripción, sé preciso, sólo las palabras clave o key words"
+                "content": 
+                """
+                Dime de manera precisa e inteligente, cuáles son las palabras clavee, SOLO LAS PALABRAS CLAVE O KEYWORDS, si es que las hubiera.
+                No respondas cualquier cosa, puesto que esto irá directo en un informe. Rescata las keywords más destacables.
+                DIME DEFRENTE LAS PALABRAS, OMITE TEXTO DE MÁS Y PREVIO A LAS PALABRAS.
+                """
+            },
+            {
+                "role": "user",
+                "content": transcription
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+#SENTIMIENTOS
+def sentiment_analysis(transcription):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": 
+                """
+                Quiero que indiques de manera precisa qué sentimientos expresa o quiere transmitir el el discurso transcrito 
+                y por qué. Omite palabras extras, dame la respuesta.
+                """
             },
             {
                 "role": "user",
@@ -79,7 +111,12 @@ def coherencia_discurso(transcription):
         messages=[
             {
                 "role": "system",
-                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'COHERENCIA' dime si el discurso es coherente y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+                "content": 
+                """
+                Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 
+                'COHERENCIA' dime si el discurso es coherente o NO y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta,
+                básate solo con COHERENCIA y dime cómo llegaste a esa conclusión.
+                """
             },
             {
                 "role": "user",
@@ -97,7 +134,11 @@ def claridad_discurso(transcription):
         messages=[
             {
                 "role": "system",
-                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'CLARIDAD' dime si el discurso es claro y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+                "content": 
+                """
+                Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 
+                'CLARIDAD' dime si el discurso es claro o NO y por qué. Evita palabras de más, sé preciso, ve defrente con al respuesta
+                """
             },
             {
                 "role": "user",
@@ -115,7 +156,35 @@ def muletillas_discurso(transcription):
         messages=[
             {
                 "role": "system",
-                "content": "Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica de 'MULETILLAS' dime si hay o no muletillas, en casi si dime cuantas muletillas tiene el discurso y cuáles son. Evita palabras de más, sé preciso, ve defrente con al respuesta"
+                "content": 
+                """Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica 
+                de MULETILLAS y dime si HAY o NO HAY muletillas, en casi SÍ HUBIERA MULETILLAS dime cuantas muletillas tiene el discurso
+                y cuáles son; y en caso NO HUBIERA MULETILLAS, simplemente dime que el discurso no tiene muletillas. 
+                Sé preciso. Evita palabras de más, sé preciso, ve defrente con la respuesta. 
+                """
+            },
+            {
+                "role": "user",
+                "content": transcription
+            }
+        ]
+    )
+    return response['choices'][0]['message']['content']
+
+#Redundancia
+def redundancia_discurso(transcription):
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        temperature=0,
+        messages=[
+            {
+                "role": "system",
+                "content": 
+                """Eres una IA altamente capacitada y entrenada en análisis de discurso, haz una retroalimentación sobre la métrica 
+                de REDUNDANCIA y dime si HAY o NO HAY redundancia, en cao SÍ HUBIERA REDUNDANCIA dime cuáles son y en caso 
+                NO HUBIERA REDUNDANCIA, simplemente dime que el discurso no tiene REDUNDANCIA. Índica dónde se encuentra la redundancia.
+                Sé preciso. Evita palabras de más, ve defrente con la respuesta. 
+                """
             },
             {
                 "role": "user",
@@ -126,19 +195,33 @@ def muletillas_discurso(transcription):
     return response['choices'][0]['message']['content']
 
 #SUGERENCIA
-def sugerencia_discurso():
+def sugerencia_discurso(transcription):
+    coherencia = coherencia_discurso(transcription)
+    claridad = claridad_discurso(transcription)
+    muletillas = muletillas_discurso(transcription)
+    prompt =(
+        "En base a las métricas de coherencia, muletillas y claridad, "
+        "hazme una recomendación exacta para mejorar mi discurso si es que la hubiera, si que no la hubiera, solo dame un consejo.:\n\n"
+        "Coherencia del discurso:\n"
+        f"{coherencia}\n\n"
+        "Claridad del discurso:\n"
+        f"{claridad}\n\n"
+        "Detección de muletillas:\n"
+        f"{muletillas}"
+    )
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         temperature=0,
         messages=[
             {
                 "role": "system",
-                "content": "En base a las métricas anteriores, coherencia, claridad y muletillas y en base tus respuestas, dame sugerencias para mejorar en esos aspectos"
+                "content": prompt
             },
             {
                 "role": "user",
-                "content": ""
+                "content": transcription
             }
         ]
     )
     return response['choices'][0]['message']['content']
+
