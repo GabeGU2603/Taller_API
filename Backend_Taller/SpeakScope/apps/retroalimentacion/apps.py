@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RetroalimentaciónConfig(AppConfig):
+class RetroalimentacionConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.retroalimentación'
+    name = 'apps.retroalimentacion'

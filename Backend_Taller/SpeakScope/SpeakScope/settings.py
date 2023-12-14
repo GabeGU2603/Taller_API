@@ -39,7 +39,7 @@ BASE_APPS = [
 LOCAL_APPS = [
     'apps.discurso',
     'apps.user',
-    'apps.retroalimentación'
+    'apps.retroalimentacion'
 ]
 THIRD_APPS = [
     'coreapi',
@@ -92,8 +92,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         #'HOST': 'localhost',
-        'HOST': 'db.hakjkcfggkqbmuscouyd.supabase.co',
+        'HOST': 'db.czgueakjwguqtracaaed.supabase.co', 
         'PORT': 5432,
+        #'NAME': 'bd',
         'NAME': 'bd',
         'USER': 'postgres',
         #'PASSWORD': 'Us3Rr',

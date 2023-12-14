@@ -32,6 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default = False)
     historical = HistoricalRecords()
     objects = UserManager()
+    #UID Q SEA UNICO 
 
     class Meta:
         verbose_name = 'Usuario'
