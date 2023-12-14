@@ -13,12 +13,13 @@ urlpatterns = [
     path('docs/', include_docs_urls(title="Documentation API")),
     path('transcribe-audio/', TranscribeAudioView.as_view(), name='transcribe_audio'),
     path('discurso/', DiscursoListaView.as_view()),
-    path('discurso/<int:pk>/', DiscursoloDetalleView.as_view()),
+   
     path('retroalimentacion/generate/<int:discurso_id>/', retroalimentacion_view, name='retroalimentacion'),
     path('retroalimentacion/', RetroalimentacionListCreateView.as_view(), name='retroalimentacion-list'),
     path('retroalimentacion/<int:pk>/', RetroalimentacionDetailView.as_view(), name='retroalimentacion-detail'),
-    path('usuario/<str:uid>/', ListaDiscursosUsuario.as_view(), name='lista_discursos_usuario'),
-    path('usuario/<str:uid>/<int:id_discurso>/', DetalleDiscurso.as_view(), name='detalle_discurso'),
+    path('usuario/', ListaDiscursosUsuario.as_view(), name='lista_discursos_usuario'),
+    path('discursos/<int:id_discurso>/', FiltrarDiscurso.as_view(), name='filtrar_discurso'),
+    path('discurso/del/<int:pk>/', DiscursoloDetalleView.as_view(), name='detalle_discurso'),
 
 ]
 

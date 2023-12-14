@@ -13,38 +13,31 @@ from ..retroalimentacion.utils import *
 from .utils import validate_id_token
 from firebase_admin._auth_utils import InvalidIdTokenError
 from django.http import Http404
+from rest_framework import generics, status
 
 ##Listar discursos por usuario UID
 class ListaDiscursosUsuario(APIView):
-    def get(self, request, uid):
-        # Aquí se asume que 'uid' es un campo en el modelo 'Discurso'
-        discursos = Discurso.objects.filter(uid=uid)
+    def get(self, request):
+        encabezados = request.headers
+        auth_header = request.headers.get('Authorization')  # Header conocido
         
-        if not discursos:
-            raise Http404("No se encontraron discursos para este usuario")
+        try:
+            uid = validate_id_token(auth_header)  
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
+        # Lógica para obtener los discursos relacionados con el 'uid'
+        discursos = Discurso.objects.filter(uid=uid)
         serializer = DiscursoSerializer(discursos, many=True)
+        
         return Response(serializer.data)
     
-##Filtrar usuario y discurso by ID    
-class DetalleDiscurso(APIView):
-    def get(self, request, uid, id_discurso):
-        # Recupera un discurso específico para un usuario por su UID y el ID del discurso
-        try:
-            discurso = Discurso.objects.get(uid=uid, id=id_discurso)
-        except Discurso.DoesNotExist:
-            raise Http404("El discurso no existe para este usuario")
-
-        serializer = DiscursoSerializer(discurso)
-        return Response(serializer.data)
     
 ##Transcripción
 class TranscribeAudioView(APIView):
 
-        #authentication_classes = [SessionAuthentication, BasicAuthentication]
-    #permission_classes = [IsAuthenticated]
     def post(self, request):
-
         #cosita de autorización#
         auth_header = request.headers.get('Authorization')
         try:
@@ -52,6 +45,7 @@ class TranscribeAudioView(APIView):
         except InvalidIdTokenError as e:
             data = {'message': 'Error de token'}
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        
         
         audio_file = request.FILES['audio_file']
         transcription = transcribe_audio(audio_file)
@@ -89,6 +83,18 @@ class TranscribeAudioView(APIView):
 #Probando nueva retroalimentación
 @api_view(['GET'])
 def retroalimentacion_view(request, discurso_id):
+    
+    ##Auth
+    encabezados = request.headers
+    auth_header = request.headers.get('Authorization') #Header conocido
+    print(auth_header)
+    try:
+        validate_id_token(auth_header)
+    except InvalidIdTokenError as e:
+        data = {'message':'Ingresa bonito crj'}
+        return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+    
+    
     # Obtén el discurso específico
     discurso = get_object_or_404(Discurso, id=discurso_id)
     trans = discurso.transcripcion
@@ -119,13 +125,12 @@ def retroalimentacion_view(request, discurso_id):
         'redundancia_resultado': redundancia_resultado,
         'sugerencia_resultado': sugerencia_resultado,
     })
-
+###MOSTRAR TODOS LOS DISCUROS SIN RESPETAR FILTRO
 class DiscursoListaView(generics.ListCreateAPIView):
     queryset = Discurso.objects.all()
     serializer_class = DiscursoSerializer
 
     def list(self, request, *args, **kwargs):
-     
         # Acceder a los encabezados de la solicitud
         encabezados = request.headers
         # Ejemplo: obtener un encabezado específico, como 'Authorization'
@@ -140,8 +145,45 @@ class DiscursoListaView(generics.ListCreateAPIView):
     
         return super(DiscursoListaView, self).list(request,args, **kwargs)
     
+    ##GET POR ID, ELIMINAR POR ID PERO MÁS DELETE JEJEJ
 class DiscursoloDetalleView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Discurso.objects.all()
-    serializer_class = DiscursoSerializer   
+    serializer_class = DiscursoSerializer
+    def destroy(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+        encabezados = request.headers
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+        auth_header = request.headers.get('Authorization')  # Header conocido
 
+        try:
+            validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
+        # Llama al método destroy de la superclase para eliminar el objeto
+        response = super().destroy(request, *args, **kwargs)
+
+        # Agrega un mensaje personalizado a la respuesta
+        response.data = {'message': 'El discurso fue eliminado correctamente'}
+        return response
+      
+##Obtener discurso especifico por ID
+class FiltrarDiscurso(APIView):
+    def get(self, request, id_discurso):
+        auth_header = request.headers.get('Authorization')  # Header conocido
+        
+        try:
+            uid_validado = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Token inválido'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Filtrar un discurso específico por el ID del discurso y validando el usuario
+        try:
+            discurso = Discurso.objects.get(uid=uid_validado, id=id_discurso)
+        except Discurso.DoesNotExist:
+            raise Http404("El discurso no existe para este usuario")
+
+        serializer = DiscursoSerializer(discurso)
+        return Response(serializer.data)

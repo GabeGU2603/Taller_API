@@ -1,5 +1,8 @@
+import statistics
 from django.http import JsonResponse
 from django.shortcuts import render
+from httplib2 import Response
+from firebase_admin._auth_utils import InvalidIdTokenError
 
 from ..discurso.utils import *
 from .utils import *
@@ -11,15 +14,72 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from .models import Retroalimentacion
 from .serializer import RetroalimentacionSerializer
+from rest_framework import status
 
 ##mostrar
 class RetroalimentacionListCreateView(generics.ListCreateAPIView):
     queryset = Retroalimentacion.objects.all()
     serializer_class = RetroalimentacionSerializer
+    def list(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+        encabezados = request.headers
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+        auth_header = request.headers.get('Authorization')  # Header conocido
+
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+        return super().list(request, *args, **kwargs)
+
 ##PorID_deTodo
 class RetroalimentacionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Retroalimentacion.objects.all()
     serializer_class = RetroalimentacionSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+        encabezados = request.headers
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+        auth_header = request.headers.get('Authorization')  # Header conocido
+
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+        return super().retrieve(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+        encabezados = request.headers
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+        auth_header = request.headers.get('Authorization')  # Header conocido
+
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        # Acceder a los encabezados de la solicitud
+        encabezados = request.headers
+        # Ejemplo: obtener un encabezado específico, como 'Authorization'
+        auth_header = request.headers.get('Authorization')  # Header conocido
+
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+        return super().destroy(request, *args, **kwargs)
 
 ##Dar retroalimentación
 @api_view(['GET'])
