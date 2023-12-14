@@ -1,15 +1,25 @@
 import openai
 import os
+###
+import firebase_admin
+from firebase_admin import credentials,firestore_async, storage
+
+cred_firebase = credentials.Certificate("credentials.json")
+
+firebase_admin.initialize_app(cred_firebase)
+###
+
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 #Auth Firebase
-#from firebase_admin.auth import verify_id_token
+from firebase_admin.auth import verify_id_token
 
-#def validate_id_token(id_token:str) -> str:
- #   decoded_token = verify_id_token(id_token)
-  #  uid = decoded_token['uid']
-    #return uid
+def validate_id_token(id_token:str) -> str:
+    decoded_token = verify_id_token(id_token)
+    uid = decoded_token['uid']
+    return uid
+
 
 # Asegúrate de que hayas configurado tu API key de OpenAI
 #api_key = os.environ.get('api_key')  # Reemplaza con tu clave API

@@ -10,8 +10,8 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from ..retroalimentacion.models import *
 from ..retroalimentacion.utils import *
-
-
+from .utils import validate_id_token
+from firebase_admin._auth_utils import InvalidIdTokenError
 ##Transcripción
 class TranscribeAudioView(APIView):
     #authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -41,42 +41,14 @@ class TranscribeAudioView(APIView):
             resumen=resumen,
             palabrasClave=palabrasClave,
             ideasClave=ideasClave,
-            #sentimiento=sent_analy,
+            sentimiento=sent_analy,
         )
         discurso.save()
         
         return Response(response_data, status=status.HTTP_200_OK)
     
 ## CRUD
-"""
-@api_view(['GET'])
-def retroalimentacion_view(request):
-    # Obtén la última transcripción desde la base de datos
-    try:
-        # Obtén el último discurso (puedes ajustar esto según tu lógica)
-        ultimo_discurso = Discurso.objects.latest('fecha')
-        trans = ultimo_discurso.transcripcion
-    except Discurso.DoesNotExist:
-        # Maneja el caso en que no haya discursos en la base de datos
-        return JsonResponse({'error': 'No hay discursos en la base de datos'})
 
-    # Llama a tus funciones
-    claridad_resultado = claridad_discurso(trans)
-    coherencia_resultado = coherencia_discurso(trans)
-    muletillas_resultado = muletillas_discurso(trans)
-    redundancia_discursoa = redundancia_discurso(trans)
-    sugerencia_resultado = sugerencia_discurso(trans)
-   
-
-    # Devuelve los resultados como una respuesta JSON
-    return JsonResponse({
-        'claridad_resultado': claridad_resultado,
-        'coherencia_resultado': coherencia_resultado,
-        'muletillas_resultado': muletillas_resultado,
-        'redundancia_discurso': redundancia_discursoa,
-        'sugerencia_resultado': sugerencia_resultado,
-    })
-"""
 #Probando nueva retroalimentación
 @api_view(['GET'])
 def retroalimentacion_view(request, discurso_id):
@@ -116,18 +88,19 @@ class DiscursoListaView(generics.ListCreateAPIView):
     serializer_class = DiscursoSerializer
 
     def list(self, request, *args, **kwargs):
+        """
         # Acceder a los encabezados de la solicitud
-       # encabezados = request.headers
-
+        encabezados = request.headers
         # Ejemplo: obtener un encabezado específico, como 'Authorization'
-      #  auth_header = request.headers.get('Authorization') #Header conocido
-
-        # Aquí puedes realizar operaciones con los encabezados
-        # ...
-
-        # Continuar con la operación normal de la lista
-        #print(auth_header)
-        #UID = validate_id_token(auth_header) #importamos función validar id usuario
+        auth_header = request.headers.get('Authorization') #Header conocido
+        print(auth_header)
+        ##IMPORTANTE
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+             data = {'message':'Ingresa bonito crj'}
+             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        """
         return super(DiscursoListaView, self).list(request,args, **kwargs)
     
 class DiscursoloDetalleView(generics.RetrieveUpdateDestroyAPIView):
