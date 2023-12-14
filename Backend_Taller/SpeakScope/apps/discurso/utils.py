@@ -8,7 +8,7 @@ cred_firebase = credentials.Certificate("credentials.json")
 
 firebase_admin.initialize_app(cred_firebase)
 ###
-
+##Try Except
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 

@@ -5,7 +5,7 @@ from django.db import models
 
 class Discurso(models.Model):
     #usuarioID = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-   # uid = models.CharField(max_length=255, unique=True)
+    uid = models.CharField(max_length=255, unique=False)
     archivoAudio = models.FileField(upload_to='audios/')
     transcripcion = models.TextField()
     resumen = models.TextField()
