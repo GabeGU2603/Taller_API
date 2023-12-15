@@ -14,8 +14,9 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from .models import Retroalimentacion
 from .serializer import RetroalimentacionSerializer
+from rest_framework.response import Response
 from rest_framework import status
-
+from rest_framework.decorators import APIView
 ##mostrar
 class RetroalimentacionListCreateView(generics.ListCreateAPIView):
     queryset = Retroalimentacion.objects.all()
@@ -33,7 +34,28 @@ class RetroalimentacionListCreateView(generics.ListCreateAPIView):
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
         return super().list(request, *args, **kwargs)
+    
+##Mostrar retros por usuario
+class ListaRetroalimentacionesUsuario(generics.ListCreateAPIView):
+    queryset = Retroalimentacion.objects.all()
+    serializer_class = RetroalimentacionSerializer
 
+    def list(self, request, *args, **kwargs):
+        # Obtener el UID del usuario del token en los encabezados
+        auth_header = request.headers.get('Authorization')
+        try:
+            UID = validate_id_token(auth_header)
+        except InvalidIdTokenError as e:
+            data = {'message': 'Ingresa bonito crj'}
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Filtrar las retroalimentaciones del usuario actual
+        retroalimentaciones_usuario = Retroalimentacion.objects.filter(discurso__uid=UID)
+        
+        # Serializar las retroalimentaciones
+        serializer = RetroalimentacionSerializer(retroalimentaciones_usuario, many=True)
+        return Response(serializer.data)
+        
 ##PorID_deTodo
 class RetroalimentacionDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Retroalimentacion.objects.all()
@@ -80,6 +102,34 @@ class RetroalimentacionDetailView(generics.RetrieveUpdateDestroyAPIView):
             return Response(data, status=status.HTTP_401_UNAUTHORIZED)
 
         return super().destroy(request, *args, **kwargs)
+
+   
+###Mostrar retro de discurso solo si existe retro
+def obtener_retroalimentacion_por_discurso(request, discurso_id):
+    # Acceder a los encabezados de la solicitud
+    encabezados = request.headers
+    # Ejemplo: obtener un encabezado específico, como 'Authorization'
+    auth_header = request.headers.get('Authorization')  # Header conocido
+
+    try:
+        UID = validate_id_token(auth_header)
+    except InvalidIdTokenError as e:
+        data = {'message': 'Ingresa bonito crj'}
+        return JsonResponse(data, status=401)
+
+    # Obtener el discurso por ID o devolver 404 si no existe
+    discurso = get_object_or_404(Discurso, id=discurso_id)
+
+    # Buscar la retroalimentación asociada al discurso
+    retroalimentacion = Retroalimentacion.objects.filter(discurso_id=discurso_id).first()
+
+    if retroalimentacion:
+        # Si se encuentra la retroalimentación, devolver los datos
+        serializer = RetroalimentacionSerializer(retroalimentacion)
+        return JsonResponse(serializer.data)
+    else:
+        # Si no hay retroalimentación, devolver un mensaje de no encontrado
+        return JsonResponse({'message': 'No se encontró retroalimentación para este discurso'}, status=404)
 
 ##Dar retroalimentación
 @api_view(['GET'])

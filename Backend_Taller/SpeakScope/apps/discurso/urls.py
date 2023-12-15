@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.documentation import include_docs_urls
 from rest_framework import routers
 from .views import * 
-from ..retroalimentacion.views import RetroalimentacionListCreateView,RetroalimentacionDetailView
+from ..retroalimentacion.views import RetroalimentacionListCreateView,RetroalimentacionDetailView,ListaRetroalimentacionesUsuario,obtener_retroalimentacion_por_discurso
 from .views import ListaDiscursosUsuario
 #from apps.retroalimentacion import views as retroalimentacion_views  # Importa las vistas de retroalimentación
 
@@ -20,6 +20,8 @@ urlpatterns = [
     path('usuario/', ListaDiscursosUsuario.as_view(), name='lista_discursos_usuario'),
     path('discursos/<int:id_discurso>/', FiltrarDiscurso.as_view(), name='filtrar_discurso'),
     path('discurso/del/<int:pk>/', DiscursoloDetalleView.as_view(), name='detalle_discurso'),
+    path('retro/buscar/<int:discurso_id>/',obtener_retroalimentacion_por_discurso, name='retroByDiscurso'),
+    path('retro/show/', ListaRetroalimentacionesUsuario.as_view(), name='detalle_discurso'),
 
 ]
 

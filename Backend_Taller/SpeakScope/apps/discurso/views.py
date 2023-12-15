@@ -125,6 +125,7 @@ def retroalimentacion_view(request, discurso_id):
         'redundancia_resultado': redundancia_resultado,
         'sugerencia_resultado': sugerencia_resultado,
     })
+
 ###MOSTRAR TODOS LOS DISCUROS SIN RESPETAR FILTRO
 class DiscursoListaView(generics.ListCreateAPIView):
     queryset = Discurso.objects.all()
